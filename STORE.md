@@ -8,8 +8,29 @@ Alles, was das Developer Dashboard abfragt, zum Hineinkopieren. Texte auf Englis
 2. ZIP bauen: `npm install`, dann `npm run zip` → `live-transcribe-explain-1.0.0.zip`.
 3. Datenschutzerklärung: liegt öffentlich im Repo, https://github.com/GordonMohrin/live-transcribe-explain/blob/main/PRIVACY.md
 4. Screenshots (1280×800) und kleine Kachel (440×280) liegen in `store/`. Neu erzeugen: `npm run shots` (braucht Chrome).
-6. Kategorie: **Productivity** (Produktivität). Sprache: English, zusätzlich Deutsch.
-7. Sichtbarkeit beim ersten Mal: **Unlisted** (nur per Link) zum Testen, später Public.
+5. Kategorie: **Productivity** (Produktivität). Sprache: English, zusätzlich Deutsch.
+6. Sichtbarkeit beim ersten Mal: **Unlisted** (nur per Link) zum Testen, später Public.
+
+## Klick-Reihenfolge im Dashboard
+
+Chrome lässt keine Erweiterung (auch keine Automatisierung) auf Web-Store-Seiten zu, deshalb von Hand:
+
+1. **Items → „+ New item“**, ZIP `live-transcribe-explain-1.0.0.zip` hochladen.
+2. **Store listing:**
+   - Beschreibung (EN) aus dem Abschnitt unten einfügen, Kategorie *Productivity*, Sprache *English*.
+   - Store-Icon 128×128: `icons/128.png`.
+   - Screenshots: `store/screenshot-1-lecture.png`, `store/screenshot-2-meeting.png`, `store/screenshot-3-setup.png`.
+   - Small promo tile: `store/tile-440x280.png`.
+   - Homepage URL und Support URL: https://github.com/GordonMohrin/live-transcribe-explain
+   - Optional über „Add language“ Deutsch ergänzen und die deutsche Beschreibung einfügen.
+3. **Privacy:**
+   - Single purpose, die Begründung zu jeder Berechtigung, „No remote code“, Datennutzung und die drei Bestätigungen aus dem Abschnitt unten übernehmen.
+   - Privacy policy URL eintragen.
+4. **Distribution:**
+   - Free, alle Regionen.
+   - Visibility *Unlisted*.
+5. **Account** (einmalig): Kontakt-E-Mail transcribe@mohrin.de eintragen und bestätigen. Ohne bestätigte E-Mail lässt sich nichts einreichen.
+6. **„Save draft“** klicken. Erst wenn alles stimmt: „Submit for review“.
 
 ## Store-Eintrag
 
