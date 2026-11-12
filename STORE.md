@@ -6,9 +6,8 @@ Alles, was das Developer Dashboard abfragt, zum Hineinkopieren. Texte auf Englis
 
 1. Entwicklerkonto: https://chrome.google.com/webstore/devconsole (einmalig 5 US-$, Zwei-Faktor-Anmeldung nötig).
 2. ZIP bauen: `npm install`, dann `npm run zip` → `live-transcribe-explain-1.0.0.zip`.
-3. **Datenschutzerklärung öffentlich erreichbar machen.** Das Repo ist privat, deshalb funktioniert ein GitHub-Link nicht. Möglichkeiten: `PRIVACY.md` als Seite auf mohrin.de ablegen, ein öffentliches GitHub-Gist anlegen, oder das Repo später öffentlich machen.
-4. Screenshots: 1280×800 oder 640×400, PNG/JPEG, 1 bis 5 Stück. Vorschlag: (a) Overlay mit Karten neben einem YouTube-Vortrag, (b) Popup mit Quelle und Sprache, (c) Optionsseite mit Anbieter-Auswahl.
-5. Kleine Kachel 440×280 (Pflicht). Das Icon auf farbigem Grund genügt.
+3. Datenschutzerklärung: liegt öffentlich im Repo, https://github.com/GordonMohrin/live-transcribe-explain/blob/main/PRIVACY.md
+4. Screenshots (1280×800) und kleine Kachel (440×280) liegen in `store/`. Neu erzeugen: `npm run shots` (braucht Chrome).
 6. Kategorie: **Productivity** (Produktivität). Sprache: English, zusätzlich Deutsch.
 7. Sichtbarkeit beim ersten Mal: **Unlisted** (nur per Link) zum Testen, später Public.
 
@@ -90,7 +89,9 @@ Explains acronyms and technical terms that are spoken in the current tab, in rea
 - Daten werden nicht für Zwecke genutzt, die nichts mit dem Kernzweck zu tun haben.
 - Daten werden nicht zur Bonitätsprüfung oder für Kredite genutzt.
 
-**Privacy policy URL:** die öffentliche Adresse aus Schritt 3 der Checkliste.
+**Privacy policy URL:** https://github.com/GordonMohrin/live-transcribe-explain/blob/main/PRIVACY.md
+
+**Kontakt-E-Mail / Support:** transcribe@mohrin.de · Homepage: https://github.com/GordonMohrin/live-transcribe-explain
 
 ## Bekannte Prüfungsrisiken
 

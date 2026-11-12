@@ -36,6 +36,7 @@ import { markInitials } from "./terms.js";
   .card:last-child { border-bottom: 0; }
   .card.new { animation: flash 1s; }
   @keyframes flash { from { background: rgba(84,174,255,.25); } }
+  @media (prefers-reduced-motion: reduce) { .card.new, .dot { animation: none; } }
   .term { font-weight: 700; font-size: 16px; letter-spacing: .02em; }
   .exp { margin: 4px 0 2px; padding: 5px 8px; border-radius: 6px; background: var(--exp-bg); font-size: 14px; line-height: 1.35; }
   .exp b { color: var(--accent); font-weight: 800; font-size: 1.12em; }

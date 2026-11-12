@@ -53,4 +53,4 @@ Nicht-öffentlich gesprochene Worte ohne Einwilligung mitzuhören oder aufzunehm
 
 ## Store
 
-Store-Texte, Begründungen der Berechtigungen und die Checkliste stehen in [STORE.md](STORE.md).
+Store-Texte, Begründungen der Berechtigungen und die Checkliste stehen in [STORE.md](STORE.md). Die Bilder liegen in `store/` und werden mit `npm run shots` aus der echten Oberfläche neu erzeugt.

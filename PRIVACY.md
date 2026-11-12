@@ -40,7 +40,7 @@ Remove the extension, or clear the cache and the fields in its settings. Nothing
 
 ## Contact
 
-Gordon Mohrin – gordon.mohrin@gmail.com
+Gordon Mohrin – transcribe@mohrin.de
 
 ---
 
@@ -57,4 +57,4 @@ Live Transcribe & Explain ist eine Browser-Erweiterung. Sie hört den Ton des ak
 - **Der Entwickler erhält keinerlei Daten.** Es gibt keinen eigenen Server, keine Statistik, kein Tracking, keine Weitergabe an Dritte außer dem gewählten KI-Anbieter.
 - **Rechtlicher Hinweis:** Das Mithören oder Transkribieren nicht-öffentlicher Gespräche ohne Einwilligung ist in Deutschland strafbar (§ 201 StGB). Bitte informiere deine Gesprächspartner.
 
-Kontakt: Gordon Mohrin – gordon.mohrin@gmail.com
+Kontakt: Gordon Mohrin – transcribe@mohrin.de
