@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Live Transcribe &amp; Explain – Settings</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 720px; margin: 24px auto; padding: 0 16px; font: 14px/1.5 system-ui, "Segoe UI", sans-serif; }
+  label { display: block; font-weight: 600; margin-top: 16px; }
+  input[type=text], input[type=password], select, textarea { width: 100%; box-sizing: border-box; font: inherit; padding: 6px 8px; margin-top: 4px; }
+  textarea { height: 160px; font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+  textarea#context, textarea.prose { font-family: inherit; font-size: 14px; }
+  textarea#context, textarea.short { height: 90px; }
+  .hint { font-size: 12.5px; opacity: .75; margin-top: 2px; }
+  button { font: inherit; padding: 7px 14px; margin: 16px 8px 0 0; cursor: pointer; }
+  h2 { font-size: 16px; margin: 28px 0 0; padding-top: 12px; border-top: 1px solid #8884; }
+  .legal { background: #fff8c5; color: #4d3800; border-radius: 6px; padding: 10px 12px; margin-top: 16px; }
+  #msg { margin-left: 8px; }
+</style>
+<h1 data-i18n="title"></h1>
+
+<label for="lang" data-i18n="optLang"></label>
+<select id="lang"></select>
+<div class="hint" data-i18n="optLangHint"></div>
+
+<label for="provider" data-i18n="optProvider"></label>
+<select id="provider">
+  <option value="claude">Claude (Anthropic)</option>
+  <option value="openai">OpenAI</option>
+</select>
+<div class="hint" data-i18n="optProviderHint"></div>
+
+<div data-provider="claude">
+  <label for="claudeKey" data-i18n="optClaudeKey"></label>
+  <input type="password" id="claudeKey" placeholder="sk-ant-…" autocomplete="off">
+  <div class="hint" data-i18n="optClaudeKeyHint"></div>
+  <label for="claudeModel" data-i18n="optModel"></label>
+  <select id="claudeModel">
+    <option value="claude-haiku-5-5" data-i18n="optModelHaiku"></option>
+    <option value="claude-sonnet-5-5" data-i18n="optModelSonnet"></option>
+  </select>
+</div>
+
+<div data-provider="openai">
+  <label for="openaiKey" data-i18n="optOpenaiKey"></label>
+  <input type="password" id="openaiKey" placeholder="sk-…" autocomplete="off">
+  <div class="hint" data-i18n="optOpenaiKeyHint"></div>
+  <label for="openaiModel" data-i18n="optModel"></label>
+  <select id="openaiModel">
+    <option value="gpt-6-luna" data-i18n="optModelLuna"></option>
+    <option value="gpt-5.4-mini" data-i18n="optModelMini"></option>
+  </select>
+</div>
+
+<label for="context" data-i18n="optContext"></label>
+<textarea id="context" data-i18n-placeholder="optContextPh"></textarea>
+<div class="hint" data-i18n="optContextHint"></div>
+
+<h2 data-i18n="optSwitches"></h2>
+<div class="hint" data-i18n="optSwitchesHint"></div>
+<div id="switches"></div>
+<div id="packRow"><button id="pack" data-i18n="packCheck"></button> <span id="packMsg" class="hint"></span></div>
+
+<label for="neverExplain" data-i18n="optNever"></label>
+<textarea id="neverExplain" class="short" data-i18n-placeholder="optNeverPh"></textarea>
+<div class="hint" data-i18n="optNeverHint"></div>
+
+<label for="extraRules" data-i18n="optRules"></label>
+<textarea id="extraRules" class="short prose" data-i18n-placeholder="optRulesPh"></textarea>
+<div class="hint" data-i18n="optRulesHint"></div>
+
+<label for="glossary" data-i18n="optGlossary"></label>
+<textarea id="glossary" data-i18n-placeholder="optGlossaryPh"></textarea>
+<div class="hint"><span data-i18n="optGlossaryHint"></span> <input type="file" id="file" accept=".txt,.csv,.md"></div>
+
+<button id="save" data-i18n="save"></button><button id="check" data-i18n="checkKey"></button><span id="msg"></span>
+<br>
+<button id="mic" data-i18n="allowMic"></button>
+<button id="clear" data-i18n="clearCache"></button> <span id="cacheInfo" class="hint"></span>
+
+<div class="legal" data-i18n="legalLong"></div>
+<script type="module" src="options.js"></script>
+</html>

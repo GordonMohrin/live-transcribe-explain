@@ -1,0 +1,5 @@
+{
+  "extName": { "message": "Live Transcribe & Explain" },
+  "extShortName": { "message": "Live Explain" },
+  "extDescription": { "message": "Live-Transkription von Meetings und Videos, die Akronyme und Fachbegriffe sofort in einem kleinen Overlay erklärt." }
+}
