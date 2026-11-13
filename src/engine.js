@@ -62,6 +62,16 @@ export class Engine {
     this.timer = setTimeout(() => this.callLlm(), wait);
   }
 
+  // KI während der Sitzung ein- oder ausschalten (Anzeige-Modus). Beim Einschalten erst ab jetzt fragen,
+  // die älteren Wörter gehen nur als Kontext mit.
+  setLlm(on) {
+    if (on && !this.useLlm) {
+      this.sentIdx = this.words.length;
+      this.pendingCands = [];
+    }
+    this.useLlm = on;
+  }
+
   // Am Ende einer Sitzung den Rest noch prüfen lassen.
   flush() {
     if (this.words.length > this.sentIdx && this.useLlm) this.callLlm();

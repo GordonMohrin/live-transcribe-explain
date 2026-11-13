@@ -36,3 +36,22 @@ test("Nie-erklären-Liste: weder Kandidat noch Karte, auch wenn Claude den Begri
   assert.deepEqual(calls[0].candidates, ["OAuth"]);
   assert.deepEqual(cards.map((c) => c.term), ["OAuth"]);
 });
+
+test("Nur Untertitel: keine KI; nach dem Umschalten nur neue Wörter fragen, ältere als Kontext", async () => {
+  const calls = [];
+  const engine = new Engine({
+    useLlm: false,
+    onCard: () => {},
+    explain: async (a) => { calls.push(a); return { terms: [] }; },
+  });
+  engine.addWords(words("der Patient hatte einen NSTEMI"));
+  await new Promise((r) => setTimeout(r, 50));
+  assert.equal(calls.length, 0);
+  engine.setLlm(true);
+  engine.addWords(words("und dann ein EKG", 5000));
+  await new Promise((r) => setTimeout(r, 50));
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].fresh, "und dann ein EKG");
+  assert.deepEqual(calls[0].candidates, ["EKG"]);
+  assert.equal(calls[0].context, "der Patient hatte einen NSTEMI");
+});

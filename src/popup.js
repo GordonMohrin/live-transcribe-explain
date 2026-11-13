@@ -45,7 +45,8 @@ async function startPackDownload() {
 (async () => {
   lang = await getLang();
   applyI18n(lang);
-  renderSwitches($("#switches"), lang, await loadSwitches(), "popup");
+  // neue gesprochene Sprache: Sprachpaket gleich hier laden (Klick = Aktivierung), die laufende Sitzung wechselt sofort
+  renderSwitches($("#switches"), lang, await loadSwitches(), "popup", (key) => key === "browserAsrLang" && startPackDownload());
   const { lastMic } = await chrome.storage.local.get("lastMic");
   $("#mic").checked = !!lastMic;
   refresh();

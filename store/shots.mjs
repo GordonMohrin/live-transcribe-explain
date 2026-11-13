@@ -15,11 +15,24 @@ const CHROME = [
   "/usr/bin/google-chrome",
 ].find((p) => p && existsSync(p));
 
-// chrome.* für Seiten außerhalb der Erweiterung. Speicherwerte kommen als JSON im Hash.
+// chrome.* für Seiten außerhalb der Erweiterung. Speicherwerte kommen als JSON im Hash; set() meldet
+// Änderungen wie Chrome an onChanged (das Overlay übernimmt Einstellungen sofort).
 const STUB = `
 const DATA = JSON.parse(decodeURIComponent(location.hash.slice(1) || "{}"));
+const CHANGED = [];
 window.chrome = {
-  storage: { local: { get: async () => DATA, set: async () => {}, remove: async () => {} } },
+  storage: {
+    local: {
+      get: async () => DATA,
+      set: async (o) => {
+        const c = {};
+        for (const k in o) { c[k] = { oldValue: DATA[k], newValue: o[k] }; DATA[k] = o[k]; }
+        CHANGED.forEach((f) => f(c, "local"));
+      },
+      remove: async () => {},
+    },
+    onChanged: { addListener: (f) => CHANGED.push(f) },
+  },
   runtime: { sendMessage: async () => ({ running: false }), onMessage: { addListener: (f) => (window.__send = f) } },
   tabs: { query: async () => [{ id: 1 }] },
 };`;
@@ -67,6 +80,22 @@ const SCENES = {
       { type: "partial", text: "der Token-Endpunkt muss idempotent sein, sonst bekommen wir beim Retry" },
     ],
   },
+  // 4: Video ohne Untertitel, nur der Untertitel-Modus (ohne KI)
+  subtitles: {
+    lang: "en",
+    data: { display: "subtitles", subtitleWords: "15", subtitleSize: 3, subtitlePos: { left: 0.07, top: 0.6, width: 0.58 } },
+    body: `
+      <div class="player">
+        <div class="reef"><div class="sun"></div><div class="hill h1"></div><div class="hill h2"></div><div class="sea"></div></div>
+        <div class="bar"><span class="play">❚❚</span><div class="track"><div class="done" style="width:22%"></div></div><span>07:15 / 32:40</span><span class="cc">CC</span></div>
+      </div>
+      <div class="below"><b>How coral reefs recover – field notes from the outer reef</b><br><span>Ocean Lab · 48K views · no captions available</span></div>`,
+    msgs: [
+      { type: "status", text: "Browser speech recognition running (en-US)" },
+      { type: "words", words: "and what surprised us most was the speed. So the reason the reef recovers this quickly is that the larvae drift in from neighbouring reefs".split(" ") },
+      { type: "partial", text: "and settle within a few weeks" },
+    ],
+  },
 };
 
 const SCENE_CSS = `
@@ -85,7 +114,13 @@ const SCENE_CSS = `
   .t2 { background: #3c4043; } .t2 .av { background: #d35400; } .t3 { background: #35363a; } .t3 .av { background: #2980b9; }
   .t4 { background: #3c4043; } .t4 .av { background: #c0392b; } .t5 { background: #35363a; } .t5 .av { background: #7f8c8d; }
   .meetbar { position: absolute; left: 0; right: 0; bottom: 0; height: 72px; display: flex; justify-content: space-between; align-items: center; padding: 0 24px; font-size: 15px; }
-  .meetbar b { background: #ea4335; padding: 6px 14px; border-radius: 20px; }`;
+  .meetbar b { background: #ea4335; padding: 6px 14px; border-radius: 20px; }
+  .reef { position: absolute; inset: 0 0 44px; background: linear-gradient(#f6b26b, #f9d9a8 45%, #8fd3e8 46%, #1c6e8c); overflow: hidden; }
+  .sun { position: absolute; left: 560px; top: 120px; width: 120px; height: 120px; border-radius: 50%; background: #fff3c4; box-shadow: 0 0 80px #ffe08a; }
+  .hill { position: absolute; bottom: 52%; background: #6b5b4b; } .h1 { left: -40px; width: 420px; height: 140px; clip-path: polygon(0 100%, 45% 0, 100% 100%); }
+  .h2 { left: 260px; width: 380px; height: 90px; background: #7d6a57; clip-path: polygon(0 100%, 55% 0, 100% 100%); }
+  .sea { position: absolute; left: 0; right: 0; bottom: 0; height: 54%; background: repeating-linear-gradient(170deg, #ffffff14 0 2px, transparent 2px 26px); }
+  .cc { border: 1px solid #fff8; padding: 0 5px; border-radius: 3px; font-size: 12px; text-decoration: line-through; opacity: .7; }`;
 
 function scenePage(name) {
   const s = SCENES[name];
@@ -112,7 +147,7 @@ const setupPage = () => `<!doctype html><meta charset="utf-8"><style>
   iframe { border: 0; background: #fff; border-radius: 12px; box-shadow: 0 16px 48px #0006; }
 </style>
 <div class="col"><h2>Bring your own key.<br>Claude or OpenAI.</h2><p>Speech is recognised on your device by Chrome. Only short text excerpts go to the AI you chose.</p>
-  <iframe src="/stub/popup.html${hash(SETUP_DATA)}" width="330" height="420"></iframe></div>
+  <iframe src="/stub/popup.html${hash(SETUP_DATA)}" width="330" height="480"></iframe></div>
 <iframe src="/stub/options.html${hash(SETUP_DATA)}" width="780" height="704"></iframe>`;
 
 const tilePage = () => `<!doctype html><meta charset="utf-8"><style>
@@ -146,6 +181,7 @@ const shots = [
   ["store/screenshot-1-lecture.png", "/scene/lecture", 1280, 800],
   ["store/screenshot-2-meeting.png", "/scene/meeting", 1280, 800],
   ["store/screenshot-3-setup.png", "/setup", 1280, 800],
+  ["store/screenshot-4-subtitles.png", "/scene/subtitles" + hash(SCENES.subtitles.data), 1280, 800],
   ["store/tile-440x280.png", "/tile", 440, 280],
 ];
 for (const [out, path, w, h] of shots) {

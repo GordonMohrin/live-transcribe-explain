@@ -32,7 +32,8 @@ async function load() {
   for (const f of FIELDS) if (s[f]) $(`#${f}`).value = s[f];
   showProvider();
   sw = await loadSwitches();
-  renderSwitches($("#switches"), lang, sw, "options", showPackRow);
+  // neue gesprochene Sprache: Sprachpaket gleich prüfen und laden, eine laufende Sitzung wechselt sofort
+  renderSwitches($("#switches"), lang, sw, "options", (key) => { showPackRow(); if (key === "browserAsrLang") $("#pack").click(); });
   showPackRow();
   $("#cacheInfo").textContent = t(lang, "cacheCount", { n: Object.keys(s[`termCache_${lang}`] || {}).length });
 }

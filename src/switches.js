@@ -2,9 +2,38 @@
 // Popup und Options-Seite bauen ihre Dropdowns daraus, der Rest liest die Werte über loadSwitches().
 //
 // Felder: key (Name in chrome.storage.local), where ("popup"/"options"), default, label, hint (optional),
-// choices [{value, en, de}], showIf {andererKey: wert} (nur sichtbar, wenn der andere Schalter so steht).
+// choices [{value, en, de}], showIf {andererKey: wert oder [werte]} (nur sichtbar, wenn der andere Schalter so steht).
 
 export const SWITCHES = [
+  {
+    key: "display",
+    where: ["popup", "options"],
+    default: "explain",
+    label: { en: "Show", de: "Anzeigen" },
+    choices: [
+      { value: "explain", en: "Explanations of terms", de: "Erklärungen der Begriffe" },
+      { value: "subtitles", en: "Subtitles only (no AI, free)", de: "Nur Untertitel (ohne KI, kostenlos)" },
+      { value: "both", en: "Subtitles and explanations", de: "Untertitel und Erklärungen" },
+    ],
+  },
+  {
+    key: "subtitleWords",
+    where: ["popup", "options"],
+    showIf: { display: ["subtitles", "both"] },
+    default: "15",
+    label: { en: "Subtitle length", de: "Untertitel-Länge" },
+    hint: {
+      en: "Drag the subtitles anywhere, also over the video. Size and length can be changed on the subtitles too.",
+      de: "Die Untertitel lassen sich überallhin ziehen, auch übers Video. Größe und Länge gehen auch direkt an den Untertiteln.",
+    },
+    choices: [
+      { value: "8", en: "8 words – one short line", de: "8 Wörter – eine kurze Zeile" },
+      { value: "15", en: "15 words – about one sentence", de: "15 Wörter – etwa ein Satz" },
+      { value: "25", en: "25 words", de: "25 Wörter" },
+      { value: "40", en: "40 words – two to three sentences", de: "40 Wörter – zwei bis drei Sätze" },
+      { value: "60", en: "60 words", de: "60 Wörter" },
+    ],
+  },
   {
     key: "asr",
     where: ["popup", "options"],
@@ -54,6 +83,10 @@ export function normalizeSwitches(stored = {}) {
   return out;
 }
 
+// Erfüllt values die showIf-Bedingung von sw? (Wert oder Liste erlaubter Werte)
+export const shown = (sw, values) =>
+  !sw.showIf || Object.entries(sw.showIf).every(([k, v]) => [v].flat().includes(values[k]));
+
 export async function loadSwitches() {
   return normalizeSwitches(await chrome.storage.local.get(SWITCHES.map((sw) => sw.key)));
 }
@@ -63,7 +96,7 @@ export function renderSwitches(root, lang, values, where, onChange) {
   root.replaceChildren();
   const rows = [];
   const update = () => {
-    for (const [sw, row] of rows) row.hidden = !!sw.showIf && Object.entries(sw.showIf).some(([k, v]) => values[k] !== v);
+    for (const [sw, row] of rows) row.hidden = !shown(sw, values);
   };
   for (const sw of SWITCHES.filter((s) => s.where.includes(where))) {
     const row = document.createElement("div");

@@ -5,7 +5,7 @@ Alles, was das Developer Dashboard abfragt, zum Hineinkopieren. Texte auf Englis
 ## Checkliste
 
 1. Entwicklerkonto: https://chrome.google.com/webstore/devconsole (einmalig 5 US-$, Zwei-Faktor-Anmeldung nötig).
-2. ZIP bauen: `npm install`, dann `npm run zip` → `live-transcribe-explain-1.0.0.zip`.
+2. ZIP bauen: `npm install`, dann `npm run zip` → `live-transcribe-explain-1.1.0.zip`.
 3. Datenschutzerklärung: liegt öffentlich im Repo, https://github.com/GordonMohrin/live-transcribe-explain/blob/main/PRIVACY.md
 4. Screenshots (1280×800) und kleine Kachel (440×280) liegen in `store/`. Neu erzeugen: `npm run shots` (braucht Chrome).
 5. Kategorie: **Productivity** (Produktivität). Sprache: English, zusätzlich Deutsch.
@@ -15,11 +15,11 @@ Alles, was das Developer Dashboard abfragt, zum Hineinkopieren. Texte auf Englis
 
 Chrome lässt keine Erweiterung (auch keine Automatisierung) auf Web-Store-Seiten zu, deshalb von Hand:
 
-1. **Items → „+ New item“**, ZIP `live-transcribe-explain-1.0.0.zip` hochladen.
+1. **Items → „+ New item“**, ZIP `live-transcribe-explain-1.1.0.zip` hochladen.
 2. **Store listing:**
    - Beschreibung (EN) aus dem Abschnitt unten einfügen, Kategorie *Productivity*, Sprache *English*.
    - Store-Icon 128×128: `icons/128.png`.
-   - Screenshots: `store/screenshot-1-lecture.png`, `store/screenshot-2-meeting.png`, `store/screenshot-3-setup.png`.
+   - Screenshots: `store/screenshot-1-lecture.png`, `store/screenshot-2-meeting.png`, `store/screenshot-3-setup.png`, `store/screenshot-4-subtitles.png`.
    - Small promo tile: `store/tile-440x280.png`.
    - Homepage URL und Support URL: https://github.com/GordonMohrin/live-transcribe-explain
    - Optional über „Add language“ Deutsch ergänzen und die deutsche Beschreibung einfügen.
@@ -32,16 +32,23 @@ Chrome lässt keine Erweiterung (auch keine Automatisierung) auf Web-Store-Seite
 5. **Account** (einmalig): Kontakt-E-Mail transcribe@mohrin.de eintragen und bestätigen. Ohne bestätigte E-Mail lässt sich nichts einreichen.
 6. **„Save draft“** klicken. Erst wenn alles stimmt: „Submit for review“.
 
+## Update auf eine neue Version (z. B. 1.1.0)
+
+1. `npm run zip` → `live-transcribe-explain-1.1.0.zip` (die Version im Manifest muss höher sein als die veröffentlichte).
+2. Im Dashboard das Item öffnen, **Package → „Upload new package“**, ZIP hochladen.
+3. **Store listing:** Beschreibungen EN/DE durch die unten ersetzen und `store/screenshot-4-subtitles.png` hinzufügen. Die anderen Bilder sind mit dem neuen gelben Hinweis neu erzeugt; sie auszutauschen ist optional.
+4. **„Save draft“**, dann **„Submit for review“**.
+
 ## Store-Eintrag
 
 **Name:** Live Transcribe & Explain
 
 **Kurzbeschreibung** (aus dem Manifest, max. 132 Zeichen):
-Live transcription of meetings and videos that instantly explains acronyms and technical terms in a small overlay.
+Live subtitles for any video or meeting, and instant explanations of acronyms and technical terms in a small overlay.
 
 **Beschreibung (EN):**
 
-Ever sat in a meeting, a lecture or a video and heard an acronym you didn't know? Live Transcribe & Explain listens along and explains it right away.
+Ever sat in a meeting, a lecture or a video and heard an acronym you didn't know? Live Transcribe & Explain listens along and explains it right away. Or it simply shows live subtitles for a video that has none.
 
 • Listens to the current tab (YouTube, Google Meet, Teams, Zoom in the browser, any video) and optionally your microphone.
 • Speech recognition runs on your device with Chrome's built-in engine. Audio never leaves your computer.
@@ -50,18 +57,19 @@ Ever sat in a meeting, a lecture or a video and heard an acronym you didn't know
 • Tell it who you are and what the conversations are about, and terms are explained in that context ("PCI" in cardiology vs. in payments).
 • Your own glossary, a "never explain" list and extra rules.
 • Alternatively reads the page's captions instead of the audio.
+• Subtitles mode: live subtitles for any video or call, e.g. a YouTube video without captions. Drag them anywhere, also over the video and in fullscreen, and choose the text size and how many of the last words you see. "Subtitles only" needs no API key and costs nothing.
 
-Bring your own key: you need an API key from Anthropic (Claude) or OpenAI. The extension talks directly to the provider; you pay them for what you use, typically a few cents per hour. Without a key only your own glossary is used.
+Bring your own key: you need an API key from Anthropic (Claude) or OpenAI. The extension talks directly to the provider; you pay them for what you use, typically a few cents per hour. Without a key, your own glossary and the subtitles still work.
 
 Privacy: no account, no server, no tracking. The transcript is kept in memory only and discarded when you stop. Only short excerpts go to the AI provider you chose.
 
-Please inform the people you talk to before transcribing a conversation; in many countries this requires their consent.
+Using it in a Teams, Meet or Zoom call? Let the others know that Live Transcribe is running.
 
 Needs Chrome 139 or newer. The speech pack for your language is downloaded by Chrome once.
 
 **Beschreibung (DE):**
 
-Im Meeting, in der Vorlesung oder im Video fällt eine Abkürzung, die du nicht kennst? Live Transcribe & Explain hört mit und erklärt sie sofort.
+Im Meeting, in der Vorlesung oder im Video fällt eine Abkürzung, die du nicht kennst? Live Transcribe & Explain hört mit und erklärt sie sofort. Oder zeigt einfach Live-Untertitel für ein Video, das keine hat.
 
 • Hört den aktuellen Tab (YouTube, Google Meet, Teams und Zoom im Browser, jedes Video) und auf Wunsch dein Mikrofon.
 • Die Spracherkennung läuft mit der eingebauten Erkennung von Chrome auf deinem Gerät. Das Audio verlässt den Rechner nicht.
@@ -70,12 +78,13 @@ Im Meeting, in der Vorlesung oder im Video fällt eine Abkürzung, die du nicht 
 • Sag ihr, wer du bist und worum es geht, dann werden Begriffe in diesem Zusammenhang erklärt („PCI“ in der Kardiologie oder im Zahlungsverkehr).
 • Eigenes Glossar, eine Nie-erklären-Liste und eigene Regeln.
 • Kann statt des Tons auch die Untertitel der Seite lesen.
+• Untertitel-Modus: Live-Untertitel für jedes Video und jedes Gespräch, etwa ein YouTube-Video ohne Untertitel. Überallhin ziehbar, auch übers Video und im Vollbild; Schriftgröße und Anzahl der zuletzt gesprochenen Wörter sind einstellbar. „Nur Untertitel“ braucht keinen API-Key und kostet nichts.
 
-Eigener Key: Du brauchst einen API-Key von Anthropic (Claude) oder OpenAI. Die Erweiterung spricht direkt mit dem Anbieter; du zahlst dort nach Verbrauch, meist wenige Cent pro Stunde. Ohne Key wird nur dein eigenes Glossar genutzt.
+Eigener Key: Du brauchst einen API-Key von Anthropic (Claude) oder OpenAI. Die Erweiterung spricht direkt mit dem Anbieter; du zahlst dort nach Verbrauch, meist wenige Cent pro Stunde. Ohne Key funktionieren dein eigenes Glossar und die Untertitel.
 
 Datenschutz: kein Konto, kein Server, kein Tracking. Das Transkript liegt nur im Arbeitsspeicher und wird beim Stoppen verworfen. Nur kurze Ausschnitte gehen an den gewählten KI-Anbieter.
 
-Bitte informiere deine Gesprächspartner, bevor du ein Gespräch transkribierst; in Deutschland ist das ohne Einwilligung strafbar (§ 201 StGB).
+Im Teams-, Meet- oder Zoom-Call? Sag den anderen, dass Live Transcribe läuft.
 
 Braucht Chrome 139 oder neuer. Das Sprachpaket für deine Sprache lädt Chrome einmalig.
 

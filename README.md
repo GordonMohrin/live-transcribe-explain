@@ -2,6 +2,8 @@
 
 Chrome-Erweiterung (Manifest V3): hört den aktuellen Tab und auf Wunsch das Mikrofon mit, erkennt die Sprache mit der eingebauten Spracherkennung von Chrome auf dem Gerät und erklärt Abkürzungen und Fachbegriffe in einem kleinen Overlay. Die Erklärungen kommen von Claude oder OpenAI, mit dem eigenen API-Key des Nutzers (bring your own key).
 
+Seit 1.1.0 gibt es außerdem einen Untertitel-Modus: Er zeigt fortlaufend die zuletzt gesprochenen Wörter, etwa für ein YouTube-Video ohne Untertitel. Die Box lässt sich überallhin ziehen, auch übers Video und im Vollbild. Größe und Wortanzahl sind einstellbar. Im Modus „Nur Untertitel“ wird keine KI gefragt, er braucht also keinen Key.
+
 ## Funktionsweise
 
 ```
@@ -16,7 +18,9 @@ Untertitel ┘  (captions.js liest die Seite)          (eigener Key, Streaming)
 - `src/captions.js`: Alternative ohne Audio. Liest die Untertitel von YouTube, Meet, Teams und Zoom.
 - `src/engine.js` und `src/terms.js`: Kandidaten finden, Glossar und Cache zuerst, dann das Sprachmodell. Keine Doppelten, Nie-erklären-Liste.
 - `src/llm.js`: gemeinsamer Prompt und JSON-Schema. Claude über `@anthropic-ai/sdk` mit Prompt-Caching, OpenAI über Chat Completions per `fetch`. Beide streamen, jede Karte erscheint, sobald ihr Objekt vollständig ist.
-- `src/switches.js`: Auswahl-Einstellungen (Quelle, gesprochene Sprache, Detailstufe) an einer Stelle. Popup und Optionen bauen ihre Dropdowns daraus.
+- `src/switches.js`: Auswahl-Einstellungen (Anzeige, Untertitel-Länge, Quelle, gesprochene Sprache, Detailstufe) an einer Stelle. Popup und Optionen bauen ihre Dropdowns daraus.
+- `src/subtitles.js`: Text und Position der Untertitel-Box, ohne DOM (getestet).
+- Einstellungen wirken sofort: Overlay und Service Worker hören auf `chrome.storage.onChanged`. Ein Wechsel der Oberflächensprache, der Anzeige, der Untertitel-Länge oder der gesprochenen Sprache greift auch in einer laufenden Sitzung.
 - `src/i18n.js`: Oberfläche auf Englisch und Deutsch.
 
 Gespeichert wird nur in `chrome.storage.local`: Einstellungen, API-Key und ein Cache erklärter Begriffe. Audio und Transkript werden nie gespeichert. Details stehen in [PRIVACY.md](PRIVACY.md).
@@ -45,11 +49,11 @@ Zum Laden in Chrome: `chrome://extensions` öffnen, Entwicklermodus einschalten,
    - eigenes Glossar
    - Nie-erklären-Liste
    - zusätzliche Regeln
-4. Im Popup die Quelle und die gesprochene Sprache wählen, dann auf **Start** klicken. Beim ersten Mal lädt Chrome das Sprachpaket.
+4. Im Popup wählen, was angezeigt wird (Erklärungen, nur Untertitel oder beides), dazu Quelle und gesprochene Sprache. Dann auf **Start** klicken. Beim ersten Mal lädt Chrome das Sprachpaket.
 
 ## Rechtliches
 
-Nicht-öffentlich gesprochene Worte ohne Einwilligung mitzuhören oder aufzunehmen, ist in Deutschland strafbar (§ 201 StGB). Overlay, Popup und Optionen erinnern daran, die Gesprächspartner zu informieren.
+Nicht-öffentlich gesprochene Worte ohne Einwilligung mitzuhören oder aufzunehmen, ist in Deutschland strafbar (§ 201 StGB). Overlay und Popup zeigen einen gelben Hinweis, in Meetings (Teams, Meet, Zoom …) den anderen zu sagen, dass Live Transcribe läuft.
 
 ## Store
 

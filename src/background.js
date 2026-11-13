@@ -4,7 +4,7 @@ import { explainTerms, checkKey, cleanKey, providerOf } from "./llm.js";
 import { t, getLang } from "./i18n.js";
 import { loadSwitches } from "./switches.js";
 
-let session = null; // { tabId, mode, engine, status }
+let session = null; // { tabId, mode, mic, engine, lang, display, hasKey, status }
 
 // Felder der Options-Seite plus alle Auswahl-Einstellungen aus switches.js (asr, detail, …).
 // Key und Modell gelten für den gewählten Anbieter (provider: "claude" | "openai").
@@ -47,30 +47,34 @@ async function ensureOffscreen() {
   });
 }
 
+// display "subtitles": nur Untertitel, die KI wird nicht gefragt (kostet nichts)
+const useLlm = (display, hasKey) => hasKey && display !== "subtitles";
+
 async function start({ tabId, mic }) {
   if (session) await stop();
   const s = await settings();
   const { lang } = s;
   const mode = s.asr; // "browser" | "captions"
-  const cache = await loadCache(lang);
+  const hasKey = !!s.apiKey;
   const engine = new Engine({
-    cache,
+    cache: await loadCache(lang),
     glossaryText: s.glossary || "",
     neverText: s.neverExplain || "",
-    useLlm: !!s.apiKey,
+    useLlm: useLlm(s.display, hasKey),
+    // Sprache aus der Sitzung, nicht von hier: ein Wechsel in den Optionen gilt sofort für neue Erklärungen
     explain: (args) => explainTerms({
-      ...args, provider: s.provider, apiKey: s.apiKey, model: s.model, lang, userContext: s.context,
+      ...args, provider: s.provider, apiKey: s.apiKey, model: s.model, lang: session.lang, userContext: s.context,
       detail: s.detail, neverExplain: s.neverExplain, extraRules: s.extraRules,
     }),
     onCard: (card) => toOverlay({ type: "card", card }),
-    onCacheUpdate: () => saveCacheSoon(lang, cache),
-    onError: (e) => setStatus(t(lang, "aiError", { msg: e.message || e }), "error"),
+    onCacheUpdate: () => saveCacheSoon(session.lang, engine.cache),
+    onError: (e) => setStatus(t(session.lang, "aiError", { msg: e.message || e }), "error"),
   });
-  session = { tabId, mode, engine, lang, status: "", startedAt: Date.now() };
+  session = { tabId, mode, mic, engine, lang, display: s.display, hasKey, status: "", startedAt: Date.now() };
 
   await chrome.scripting.executeScript({ target: { tabId }, files: ["overlay.js"] });
   toOverlay({ type: "reset", lang });
-  if (!s.apiKey) setStatus(t(lang, "noKey"), "warn");
+  if (!hasKey && s.display !== "subtitles") setStatus(t(lang, "noKey"), "warn");
 
   if (mode === "captions") {
     await chrome.scripting.executeScript({ target: { tabId }, files: ["captions.js"] });
@@ -114,6 +118,7 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
           : { running: false };
       case "words": // vom Offscreen-Dokument (Spracherkennung) oder vom Untertitel-Leser
         session?.engine.addWords(msg.words);
+        if (session && session.display !== "explain") toOverlay({ type: "words", words: msg.words.map((w) => w.w) });
         return {};
       case "partial":
         toOverlay({ type: "partial", text: msg.text });
@@ -148,5 +153,27 @@ chrome.tabs.onUpdated.addListener((tabId, info) => {
   else if (info.status === "complete" && session.mode !== "captions") {
     chrome.scripting.executeScript({ target: { tabId }, files: ["overlay.js"] })
       .then(() => { toOverlay({ type: "reset", lang: session.lang }); setStatus(session.status); }).catch(() => {});
+  }
+});
+
+// Einstellungen, die in einer laufenden Sitzung sofort wirken. Das Overlay hört selbst auf lang, display und
+// die Untertitel-Einstellungen; hier geht es um KI, Cache und Spracherkennung.
+chrome.storage.onChanged.addListener(async (changes, area) => {
+  if (area !== "local" || !session) return;
+  const sess = session;
+  if (changes.lang) {
+    sess.lang = changes.lang.newValue === "de" ? "de" : "en";
+    sess.engine.cache = await loadCache(sess.lang); // neue Erklärungen in der neuen Sprache
+    if (sess.mode === "browser") chrome.runtime.sendMessage({ to: "offscreen", cmd: "lang", lang: sess.lang }).catch(() => {});
+  }
+  if (changes.display) {
+    sess.display = (await loadSwitches()).display;
+    sess.engine.setLlm(useLlm(sess.display, sess.hasKey));
+    if (!sess.hasKey && sess.display !== "subtitles") setStatus(t(sess.lang, "noKey"), "warn");
+  }
+  if (changes.browserAsrLang && sess.mode === "browser") {
+    const { browserAsrLang } = await loadSwitches();
+    setStatus(t(sess.lang, "asrLangChanged", { lang: browserAsrLang }));
+    chrome.runtime.sendMessage({ to: "offscreen", cmd: "asrLang", browserAsrLang }).catch(() => {});
   }
 });
